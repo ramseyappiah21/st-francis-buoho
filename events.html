@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events | St Francis Church, Buoho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-bar">
+      <a class="logo" href="index.html">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <span class="logo-text">
+          <strong>St Francis</strong>
+          <span>Catholic Church, Buoho</span>
+        </span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+      <nav class="nav-links" id="navLinks" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="worship.html">Worship</a>
+        <a class="active" href="events.html">Events</a>
+        <a href="contact.html">Contact</a>
+        <a class="portal-link" href="portal.html">Parish Portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <h1>Parish events</h1>
+        <p>Gatherings that deepen faith and strengthen community life in Buoho.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Coming up</h2>
+        <p>Join us for prayer, fellowship, and formation. Parish staff can update these through the Parish Portal.</p>
+      </div>
+      <div class="event-stack" id="publicEvents">
+        <article class="event-item">
+          <div class="event-date">
+            <span class="day">Sun</span>
+            <span class="month">Weekly</span>
+          </div>
+          <div>
+            <h3>Sunday Eucharist</h3>
+            <p>9:00 AM · Main Church · Weekly celebration of Holy Mass</p>
+          </div>
+        </article>
+        <article class="event-item">
+          <div class="event-date">
+            <span class="day">Fri</span>
+            <span class="month">Evening</span>
+          </div>
+          <div>
+            <h3>Youth fellowship</h3>
+            <p>Parish Hall · Prayer, games, and Catholic teaching for teenagers and young adults</p>
+          </div>
+        </article>
+        <article class="event-item">
+          <div class="event-date">
+            <span class="day">Sat</span>
+            <span class="month">Monthly</span>
+          </div>
+          <div>
+            <h3>Parish clean-up &amp; service day</h3>
+            <p>Church grounds · Serving together in the spirit of St Francis</p>
+          </div>
+        </article>
+      </div>
+      <p style="margin-top:2rem;">
+        <a class="btn btn-primary" href="portal.html" style="background:var(--forest);color:#fff;">Manage events in Parish Portal</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>St Francis of Assisi Catholic Church</strong>
+        Buoho · Ashanti Region · Ghana
+      </div>
+      <div>
+        <a href="contact.html">Suggest an event</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/site.js"></script>
+</body>
+</html>

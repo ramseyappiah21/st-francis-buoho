@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parish Portal | St Francis, Buoho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-bar">
+      <a class="logo" href="index.html">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <span class="logo-text">
+          <strong>St Francis</strong>
+          <span>Parish Portal · Buoho</span>
+        </span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+      <nav class="nav-links" id="navLinks" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="worship.html">Worship</a>
+        <a href="events.html">Events</a>
+        <a href="contact.html">Contact</a>
+        <a class="active portal-link" href="portal.html">Parish Portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="app portal-app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <p class="brand-name">Parish Portal</p>
+          <p class="brand-tag">St Francis · Buoho</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Portal">
+        <button class="nav-link active" data-view="dashboard">Dashboard</button>
+        <button class="nav-link" data-view="members">Members</button>
+        <button class="nav-link" data-view="contributions">Contributions</button>
+        <button class="nav-link" data-view="events">Events</button>
+        <button class="nav-link" data-view="reports">Reports</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <p class="muted">For parish staff · data saved in this browser</p>
+        <p class="muted"><a href="index.html" style="color:#e8c87a;">← Back to website</a></p>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle portal menu">☰</button>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p class="topbar-note" id="pageNote">Overview of parish activity</p>
+      </header>
+
+      <main class="content">
+        <section class="view active" id="view-dashboard">
+          <div class="stat-grid">
+            <article class="stat">
+              <p class="stat-label">Active members</p>
+              <p class="stat-value" id="statMembers">0</p>
+            </article>
+            <article class="stat">
+              <p class="stat-label">Contributions (YTD)</p>
+              <p class="stat-value" id="statGiving">GH₵0</p>
+            </article>
+            <article class="stat">
+              <p class="stat-label">Upcoming events</p>
+              <p class="stat-value" id="statEvents">0</p>
+            </article>
+            <article class="stat">
+              <p class="stat-label">Families</p>
+              <p class="stat-value" id="statFamilies">0</p>
+            </article>
+          </div>
+
+          <div class="split">
+            <section class="panel">
+              <h2>Recent contributions</h2>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Member</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashContributions"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="panel">
+              <h2>Next events</h2>
+              <ul class="event-list" id="dashEvents"></ul>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-members">
+          <div class="toolbar">
+            <input type="search" id="memberSearch" placeholder="Search members…" />
+            <button class="btn primary" id="addMemberBtn">Add member</button>
+          </div>
+          <div class="table-wrap panel">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="membersTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="view-contributions">
+          <div class="toolbar">
+            <select id="contributionFilter">
+              <option value="all">All types</option>
+              <option value="Tithe">Tithe</option>
+              <option value="Offering">Offering</option>
+              <option value="Special">Special</option>
+              <option value="Pledge">Pledge</option>
+            </select>
+            <button class="btn primary" id="addContributionBtn">Record contribution</button>
+          </div>
+          <div class="table-wrap panel">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Member</th>
+                  <th>Type</th>
+                  <th>Method</th>
+                  <th>Amount</th>
+                  <th>Notes</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="contributionsTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="view" id="view-events">
+          <div class="toolbar">
+            <button class="btn primary" id="addEventBtn">Add event</button>
+          </div>
+          <div class="event-grid" id="eventsGrid"></div>
+        </section>
+
+        <section class="view" id="view-reports">
+          <div class="split reports">
+            <section class="panel">
+              <h2>Giving by type</h2>
+              <div id="reportByType" class="bar-chart"></div>
+            </section>
+            <section class="panel">
+              <h2>Membership snapshot</h2>
+              <ul class="report-list" id="reportMembership"></ul>
+            </section>
+          </div>
+          <section class="panel">
+            <h2>Monthly contributions</h2>
+            <div id="reportMonthly" class="bar-chart horizontal"></div>
+          </section>
+          <div class="toolbar end">
+            <button class="btn" id="exportBtn">Export CSV</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="modal" id="modal">
+    <form method="dialog" id="modalForm">
+      <header class="modal-header">
+        <h2 id="modalTitle">Form</h2>
+        <button type="button" class="icon-btn" id="modalClose" aria-label="Close">×</button>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-footer">
+        <button type="button" class="btn" id="modalCancel">Cancel</button>
+        <button type="submit" class="btn primary" id="modalSave">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="js/site.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

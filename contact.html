@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | St Francis Church, Buoho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-bar">
+      <a class="logo" href="index.html">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <span class="logo-text">
+          <strong>St Francis</strong>
+          <span>Catholic Church, Buoho</span>
+        </span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+      <nav class="nav-links" id="navLinks" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="worship.html">Worship</a>
+        <a href="events.html">Events</a>
+        <a class="active" href="contact.html">Contact</a>
+        <a class="portal-link" href="portal.html">Parish Portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="section">
+        <h1>Contact the parish</h1>
+        <p>We are glad to hear from parishioners, visitors, and friends of St Francis, Buoho.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="contact-grid">
+        <div class="contact-block">
+          <h3>Find us</h3>
+          <p>
+            St Francis of Assisi Catholic Church<br />
+            Buoho, Ashanti Region<br />
+            Ghana
+          </p>
+          <p>
+            <strong style="color:var(--forest);">Diocese</strong><br />
+            Catholic Diocese of Konongo-Mampong
+          </p>
+          <p>
+            <strong style="color:var(--forest);">Office hours</strong><br />
+            Monday – Friday · 9:00 AM – 1:00 PM<br />
+            (and by appointment)
+          </p>
+          <p>
+            Update phone and email for your parish office when ready. For now, use the form and portal records for internal coordination.
+          </p>
+        </div>
+
+        <form class="contact-form" id="contactForm">
+          <label>
+            Full name
+            <input type="text" name="name" required />
+          </label>
+          <label>
+            Email or phone
+            <input type="text" name="contact" required />
+          </label>
+          <label>
+            Message
+            <textarea name="message" required placeholder="How can we help?"></textarea>
+          </label>
+          <button class="btn" type="submit">Send message</button>
+          <p id="formNote" style="margin:0;color:var(--muted);font-size:0.95rem;"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>St Francis of Assisi Catholic Church</strong>
+        Buoho · Ashanti Region · Ghana
+      </div>
+      <div>
+        <a href="portal.html">Parish Portal for staff</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/site.js"></script>
+</body>
+</html>
