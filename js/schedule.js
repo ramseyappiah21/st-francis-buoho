@@ -17,14 +17,12 @@
         time: "9:30 – 11:30 AM",
         description: "Sunday celebration of the Eucharist at the sanctuary.",
       },
-      {
-        id: "sched-confession",
-        title: "Confession",
-        detail: "Before Mass & by appointment",
-        time: "Sanctuary office",
-        description: "Confession is available before Mass and by appointment.",
-      },
     ];
+  }
+
+  function isConfessionItem(item) {
+    const text = `${item?.id || ""} ${item?.title || ""} ${item?.description || ""}`.toLowerCase();
+    return text.includes("confession") || item?.id === "sched-confession";
   }
 
   function escapeHtml(value) {
@@ -42,6 +40,12 @@
       const data = JSON.parse(raw);
       if (!Array.isArray(data.schedule) || !data.schedule.length) {
         data.schedule = defaultSchedule();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        return [...data.schedule];
+      }
+      const cleaned = data.schedule.filter((item) => !isConfessionItem(item));
+      if (cleaned.length !== data.schedule.length) {
+        data.schedule = cleaned.length ? cleaned : defaultSchedule();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       }
       return [...data.schedule];
