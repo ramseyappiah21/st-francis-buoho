@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Portal | St. Mary's Sanctuary, Grotto-Buoho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="portal-locked">
+  <header class="site-header">
+    <div class="nav-bar">
+      <a class="logo" href="index.html">
+        <img class="logo-mark" src="images/mary.jpg" alt="Our Lady — St. Mary's Sanctuary logo" width="48" height="48" />
+        <span class="logo-text">
+          <strong>St. Mary's Sanctuary</strong>
+          <span>Staff Portal · Grotto-Buoho</span>
+        </span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+      <nav class="nav-links" id="navLinks" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="worship.html">Worship</a>
+        <a href="events.html">Events</a>
+        <a href="birthday.html">Birthdays</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="login-gate" id="loginGate">
+    <div class="login-shell">
+      <div class="login-brand">
+        <img class="login-brand-mark" src="images/mary.jpg" alt="" width="72" height="72" />
+        <p class="login-brand-name">St. Mary's Sanctuary</p>
+        <p class="login-brand-place">Grotto-Buoho · Diocese of Konongo-Mampong</p>
+      </div>
+
+      <div class="login-card">
+        <p class="login-eyebrow">Staff access</p>
+        <h1>Staff Portal</h1>
+        <p class="login-copy">
+          Secure sign-in for staff to manage the inbox, birthdays, events, and weekly schedule.
+        </p>
+        <form id="loginForm" class="login-form">
+          <label class="password-field">
+            Password
+            <span class="password-input-wrap">
+              <input
+                id="loginPassword"
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                required
+                placeholder="Enter staff password"
+              />
+              <button
+                class="password-toggle"
+                type="button"
+                data-toggle-password="loginPassword"
+                aria-pressed="false"
+              >
+                Show
+              </button>
+            </span>
+          </label>
+          <button class="btn primary login-submit" type="submit">Sign in</button>
+          <p class="login-error" id="loginError" role="alert"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div class="app portal-app" id="portalApp" hidden>
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <img class="brand-mark" src="images/mary.jpg" alt="Our Lady" width="40" height="40" />
+        <div>
+          <p class="brand-name">Staff Portal</p>
+          <p class="brand-tag">Grotto-Buoho</p>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Staff Portal">
+        <button class="nav-link active" data-view="dashboard">Dashboard</button>
+        <button class="nav-link" data-view="inbox">Inbox <span class="nav-badge" id="inboxBadge" hidden>0</span></button>
+        <button class="nav-link" data-view="birthdays">Birthdays <span class="nav-badge" id="birthdayBadge" hidden>0</span></button>
+        <button class="nav-link" data-view="events">Events</button>
+        <button class="nav-link" data-view="schedule">Weekly schedule</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="sidebar-account">
+          <p class="sidebar-account-label">Account</p>
+          <button class="btn small auth-btn" type="button" id="changePassBtn">Change password</button>
+          <button class="btn small danger auth-btn" type="button" id="logoutBtn">Sign out</button>
+        </div>
+        <p class="muted">Staff only · data saved in this browser</p>
+        <p class="muted"><a href="index.html" style="color:#e8c87a;">← Back to website</a></p>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle portal menu">☰</button>
+        <h1 id="pageTitle">Dashboard</h1>
+        <p class="topbar-note" id="pageNote">Overview of sanctuary activity</p>
+      </header>
+
+      <main class="content">
+        <section class="view active" id="view-dashboard">
+          <div class="stat-grid">
+            <article class="stat">
+              <p class="stat-label">Unread messages</p>
+              <p class="stat-value" id="statMessages">0</p>
+            </article>
+            <article class="stat">
+              <p class="stat-label">Upcoming events</p>
+              <p class="stat-value" id="statEvents">0</p>
+            </article>
+            <article class="stat">
+              <p class="stat-label">Pending birthdays</p>
+              <p class="stat-value" id="statBirthdays">0</p>
+            </article>
+            <article class="stat">
+              <p class="stat-label">Schedule items</p>
+              <p class="stat-value" id="statSchedule">0</p>
+            </article>
+          </div>
+
+          <div class="split">
+            <section class="panel">
+              <h2>Recent messages</h2>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>When</th>
+                      <th>Name</th>
+                      <th>Contact</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashMessages"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="panel">
+              <h2>Next events</h2>
+              <ul class="event-list" id="dashEvents"></ul>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-inbox">
+          <div class="toolbar">
+            <p class="toolbar-hint" id="inboxHint">Messages from the website Contact page</p>
+            <button class="btn" id="markAllReadBtn" type="button">Mark all read</button>
+          </div>
+          <div class="inbox-list panel" id="inboxList"></div>
+        </section>
+
+        <section class="view" id="view-birthdays">
+          <div class="toolbar">
+            <p class="toolbar-hint">Download the photo, design the flyer yourself, then upload and publish it</p>
+            <a class="btn" href="birthday.html" target="_blank" rel="noopener">Open public page</a>
+            <a class="btn" href="format.jpg" download="birthday-flyer-format.jpg">Download format template</a>
+          </div>
+          <div class="birthday-admin" id="birthdayAdmin"></div>
+          <div class="flyer-upload panel" id="flyerUploadPanel" hidden>
+            <h2>Upload finished flyer</h2>
+            <p class="toolbar-hint" id="flyerUploadName"></p>
+            <div class="flyer-upload-grid">
+              <div>
+                <label class="field">
+                  <span>Finished flyer image</span>
+                  <input type="file" id="flyerUploadInput" accept="image/*" />
+                </label>
+                <div class="toolbar" style="margin-top:0.85rem;">
+                  <button class="btn primary" type="button" id="publishBirthdayBtn" disabled>Publish to website</button>
+                  <button class="btn" type="button" id="unpublishBirthdayBtn" hidden>Unpublish</button>
+                  <button class="btn danger" type="button" id="closeFlyerBtn">Close</button>
+                </div>
+              </div>
+              <div class="flyer-preview-wrap">
+                <img id="flyerUploadPreview" alt="Finished flyer preview" hidden />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-events">
+          <div class="toolbar">
+            <button class="btn primary" id="addEventBtn">Add event</button>
+          </div>
+          <div class="event-grid" id="eventsGrid"></div>
+        </section>
+
+        <section class="view" id="view-schedule">
+          <div class="toolbar">
+            <p class="toolbar-hint">Shown on Home and Worship pages. Changes appear after you save.</p>
+            <button class="btn primary" id="addScheduleBtn">Add schedule item</button>
+          </div>
+          <div class="table-wrap panel">
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Detail</th>
+                  <th>Time / place</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="scheduleTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="modal" id="modal">
+    <form method="dialog" id="modalForm">
+      <header class="modal-header">
+        <h2 id="modalTitle">Form</h2>
+        <button type="button" class="icon-btn" id="modalClose" aria-label="Close">×</button>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-footer">
+        <button type="button" class="btn" id="modalCancel">Cancel</button>
+        <button type="submit" class="btn primary" id="modalSave">Save</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog class="modal password-modal" id="changePassModal">
+    <form id="changePassForm" class="change-pass-form">
+      <header class="modal-header">
+        <h2>Change password</h2>
+        <button type="button" class="icon-btn" id="changePassClose" aria-label="Close">×</button>
+      </header>
+      <div class="modal-body">
+        <p class="password-modal-lead">
+          Choose a strong staff password. It must be at least 8 characters and include a number.
+        </p>
+        <label class="password-field">
+          Current password
+          <span class="password-input-wrap">
+            <input id="currentPassword" type="password" name="currentPassword" autocomplete="current-password" required />
+            <button
+              class="password-toggle"
+              type="button"
+              data-toggle-password="currentPassword"
+              aria-pressed="false"
+            >
+              Show
+            </button>
+          </span>
+        </label>
+        <label class="password-field">
+          New password
+          <span class="password-input-wrap">
+            <input
+              id="newPassword"
+              type="password"
+              name="newPassword"
+              autocomplete="new-password"
+              minlength="8"
+              pattern="(?=.*\d).{8,}"
+              title="At least 8 characters and include a number"
+              required
+            />
+            <button
+              class="password-toggle"
+              type="button"
+              data-toggle-password="newPassword"
+              aria-pressed="false"
+            >
+              Show
+            </button>
+          </span>
+        </label>
+        <p class="login-error" id="changePassError" role="alert"></p>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" class="btn" id="changePassCancel">Cancel</button>
+        <button type="submit" class="btn primary">Update password</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="js/site.js"></script>
+  <script src="js/schedule.js"></script>
+  <script src="js/birthdays.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
