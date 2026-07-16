@@ -9,48 +9,14 @@
     schedule: ["Weekly schedule", "Mass times and weekly worship items on the website"],
   };
 
-  const seed = () => {
-    const today = new Date();
-    const iso = (offsetDays) => {
-      const d = new Date(today);
-      d.setDate(d.getDate() + offsetDays);
-      return d.toISOString().slice(0, 10);
-    };
-
-    return {
-      messages: [],
-      birthdays: [],
-      schedule: window.ScheduleUtils
-        ? ScheduleUtils.defaultSchedule()
-        : [],
-      events: [
-        {
-          id: crypto.randomUUID(),
-          title: "First Mass",
-          date: iso(2),
-          time: "07:30",
-          location: "St. Mary's Sanctuary, Grotto-Buoho",
-          description: "Sunday Mass · 7:30 – 9:30 AM",
-        },
-        {
-          id: crypto.randomUUID(),
-          title: "Second Mass",
-          date: iso(2),
-          time: "09:30",
-          location: "St. Mary's Sanctuary, Grotto-Buoho",
-          description: "Sunday Mass · 9:30 – 11:30 AM",
-        },
-        {
-          id: crypto.randomUUID(),
-          title: "Youth Fellowship",
-          date: iso(5),
-          time: "18:30",
-          location: "Sanctuary Hall",
-          description: "Prayer, games, and Catholic teaching",
-        },
-      ],
-    };
-  };
+  const seed = () => ({
+    messages: [],
+    birthdays: [],
+    schedule: window.ScheduleUtils
+      ? ScheduleUtils.defaultSchedule()
+      : [],
+    events: [],
+  });
 
   function load() {
     try {

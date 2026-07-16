@@ -631,6 +631,7 @@ a {
 }
 
 .empty-birthdays,
+.empty-events,
 .form-note {
   color: var(--muted);
 }

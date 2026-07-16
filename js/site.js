@@ -39,7 +39,7 @@
 
         if (note) {
           note.textContent =
-            "Thank you. Your message was sent to the Sanctuary Portal inbox.";
+            "Thank you. Your message was sent to the sanctuary team.";
         }
         contactForm.reset();
       } catch {
@@ -53,36 +53,53 @@
 
   const publicEvents = document.getElementById("publicEvents");
   if (publicEvents) {
+    const emptyHtml =
+      `<p class="empty-events">No upcoming events right now. Check back soon, or see Mass times on the Worship page.</p>`;
     try {
-      const raw = localStorage.getItem("stfrancis-church-data-v1");
-      if (!raw) return;
-      const data = JSON.parse(raw);
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const data = raw ? JSON.parse(raw) : { events: [] };
       const today = new Date().toISOString().slice(0, 10);
       const upcoming = (data.events || [])
         .filter((ev) => ev.date >= today)
         .sort((a, b) => a.date.localeCompare(b.date))
-        .slice(0, 6);
+        .slice(0, 12);
 
-      if (!upcoming.length) return;
-
-      publicEvents.innerHTML = upcoming
-        .map((ev) => {
-          const d = new Date(ev.date + "T00:00:00");
-          return `
+      if (!upcoming.length) {
+        publicEvents.innerHTML = emptyHtml;
+      } else {
+        publicEvents.innerHTML = upcoming
+          .map((ev) => {
+            const d = new Date(ev.date + "T00:00:00");
+            const title = escapeHtml(ev.title || "Event");
+            const time = escapeHtml(ev.time || "");
+            const location = escapeHtml(ev.location || "");
+            const description = ev.description
+              ? ` · ${escapeHtml(ev.description)}`
+              : "";
+            return `
             <article class="event-item">
               <div class="event-date">
                 <span class="day">${d.getDate()}</span>
                 <span class="month">${d.toLocaleString("en-GB", { month: "short" })}</span>
               </div>
               <div>
-                <h3>${ev.title}</h3>
-                <p>${ev.time} · ${ev.location}${ev.description ? " · " + ev.description : ""}</p>
+                <h3>${title}</h3>
+                <p>${time} · ${location}${description}</p>
               </div>
             </article>`;
-        })
-        .join("");
+          })
+          .join("");
+      }
     } catch {
-      /* keep default markup */
+      publicEvents.innerHTML = emptyHtml;
     }
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 })();

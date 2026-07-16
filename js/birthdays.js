@@ -199,7 +199,7 @@
           }
           if (note) {
             note.textContent =
-              "Thank you! Your photo and details were sent to the Sanctuary Portal. The media team will design your flyer and publish it here.";
+              "Thank you! Your photo and details were received. The media team will design your flyer and publish it here.";
           }
           renderGallery();
         } catch (err) {
