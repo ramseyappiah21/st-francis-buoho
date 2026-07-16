@@ -8,16 +8,46 @@
     });
   }
 
+  const STORAGE_KEY = "stfrancis-church-data-v1";
+
   const contactForm = document.getElementById("contactForm");
   if (contactForm) {
-    contactForm.addEventListener("submit", (e) => {
+    contactForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const form = new FormData(contactForm);
+      const name = String(form.get("name") || "").trim();
+      const contact = String(form.get("contact") || "").trim();
+      const message = String(form.get("message") || "").trim();
       const note = document.getElementById("formNote");
-      if (note) {
-        note.textContent =
-          "Thank you. Your message has been recorded in this browser. Please also contact the parish office directly for urgent matters.";
+
+      try {
+        let data = { events: [], messages: [] };
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) data = { ...data, ...JSON.parse(raw) };
+        if (!Array.isArray(data.messages)) data.messages = [];
+
+        data.messages.unshift({
+          id: crypto.randomUUID(),
+          name,
+          contact,
+          message,
+          createdAt: new Date().toISOString(),
+          read: false,
+        });
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+        if (note) {
+          note.textContent =
+            "Thank you. Your message was sent to the Sanctuary Portal inbox.";
+        }
+        contactForm.reset();
+      } catch {
+        if (note) {
+          note.textContent =
+            "Sorry — the message could not be saved. Please try again or contact the sanctuary office directly.";
+        }
       }
-      contactForm.reset();
     });
   }
 

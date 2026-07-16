@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Worship | St Francis Church, Buoho</title>
+  <title>Worship | St. Mary's Sanctuary, Grotto-Buoho</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -13,10 +13,10 @@
   <header class="site-header">
     <div class="nav-bar">
       <a class="logo" href="index.html">
-        <span class="logo-mark" aria-hidden="true"></span>
+        <img class="logo-mark" src="images/mary.jpg" alt="Our Lady — St. Mary's Sanctuary logo" width="48" height="48" />
         <span class="logo-text">
-          <strong>St Francis</strong>
-          <span>Catholic Church, Buoho</span>
+          <strong>St. Mary's Sanctuary</strong>
+          <span>Grotto-Buoho</span>
         </span>
       </a>
       <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
@@ -25,8 +25,9 @@
         <a href="about.html">About</a>
         <a class="active" href="worship.html">Worship</a>
         <a href="events.html">Events</a>
+        <a href="birthday.html">Birthdays</a>
         <a href="contact.html">Contact</a>
-        <a class="portal-link" href="portal.html">Parish Portal</a>
+        <a class="portal-link" href="portal.html">Sanctuary Portal</a>
       </nav>
     </div>
   </header>
@@ -35,44 +36,44 @@
     <section class="page-hero">
       <div class="section">
         <h1>Worship with us</h1>
-        <p>Mass times, confession, and sacramental life at St Francis, Buoho.</p>
+        <p>Mass times, confession, and sacramental life at St. Mary's Sanctuary, Grotto-Buoho.</p>
       </div>
     </section>
 
     <section class="section">
       <div class="section-head">
         <h2>Weekly schedule</h2>
-        <p>All are welcome. Times may vary on solemnities — please check with the parish office for feast days.</p>
+        <p>All are welcome. Times may vary on solemnities — please check with the sanctuary office for feast days.</p>
       </div>
-      <div class="event-stack">
+      <div class="event-stack" id="worshipSchedule">
         <article class="event-item">
           <div class="event-date">
-            <span class="day">Sun</span>
-            <span class="month">Weekly</span>
+            <span class="day">1st</span>
+            <span class="month">Mass</span>
           </div>
           <div>
-            <h3>Sunday Mass — 9:00 AM</h3>
-            <p>The principal celebration of the Eucharist for the parish community.</p>
+            <h3>First Mass — 7:30 – 9:30 AM</h3>
+            <p>Sunday celebration of the Eucharist at the sanctuary.</p>
           </div>
         </article>
         <article class="event-item">
           <div class="event-date">
-            <span class="day">Tue</span>
-            <span class="month">&amp; Thu</span>
+            <span class="day">2nd</span>
+            <span class="month">Mass</span>
           </div>
           <div>
-            <h3>Weekday Mass — 6:30 AM</h3>
-            <p>A quiet morning offering for workers, students, and early risers.</p>
+            <h3>Second Mass — 9:30 – 11:30 AM</h3>
+            <p>Sunday celebration of the Eucharist at the sanctuary.</p>
           </div>
         </article>
         <article class="event-item">
           <div class="event-date">
-            <span class="day">Sat</span>
-            <span class="month">Monthly</span>
+            <span class="day">Conf</span>
+            <span class="month">Sacrament</span>
           </div>
           <div>
-            <h3>Devotions &amp; adoration</h3>
-            <p>Sacred Heart, Marian devotion, and periods of Eucharistic adoration as announced.</p>
+            <h3>Confession — Sanctuary office</h3>
+            <p>Confession is available before Mass and by appointment.</p>
           </div>
         </article>
       </div>
@@ -82,10 +83,10 @@
       <div class="section">
         <div class="section-head">
           <h2>The Sacraments</h2>
-          <p>Contact the parish office to prepare for Baptism, First Communion, Confirmation, Marriage, or Anointing of the Sick.</p>
+          <p>Contact the sanctuary office to prepare for Baptism, First Communion, Confirmation, Marriage, or Anointing of the Sick.</p>
         </div>
         <p style="margin:0;max-width:40rem;color:rgba(248,250,248,.85);">
-          Confession is available before Sunday Mass and by appointment. For home visits to the sick, kindly call or send a message through the Contact page.
+          Confession is available before Mass and by appointment. For home visits to the sick, kindly call or send a message through the Contact page.
         </p>
       </div>
     </section>
@@ -94,8 +95,8 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div>
-        <strong>St Francis of Assisi Catholic Church</strong>
-        Buoho · Ashanti Region · Ghana
+        <strong>St. Mary's Sanctuary, Grotto-Buoho</strong>
+        Ashanti Region · Ghana
       </div>
       <div>
         <a href="contact.html">Ask about sacramental preparation</a>
@@ -104,5 +105,6 @@
   </footer>
 
   <script src="js/site.js"></script>
+  <script src="js/schedule.js"></script>
 </body>
 </html>

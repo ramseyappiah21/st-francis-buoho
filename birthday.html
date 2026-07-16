@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthdays | St. Mary's Sanctuary, Grotto-Buoho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/site.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="nav-bar">
+      <a class="logo" href="index.html">
+        <img class="logo-mark" src="images/mary.jpg" alt="Our Lady — St. Mary's Sanctuary logo" width="48" height="48" />
+        <span class="logo-text">
+          <strong>St. Mary's Sanctuary</strong>
+          <span>Grotto-Buoho</span>
+        </span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+      <nav class="nav-links" id="navLinks" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="worship.html">Worship</a>
+        <a href="events.html">Events</a>
+        <a class="active" href="birthday.html">Birthdays</a>
+        <a href="contact.html">Contact</a>
+        <a class="portal-link" href="portal.html">Sanctuary Portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero birthday-hero">
+      <div class="section">
+        <h1>Birthday blessings</h1>
+        <p>Share your photo, name, and birth month &amp; day. Our media team will design your flyer and publish it here.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>On the website</h2>
+        <p>Published birthday flyers from the sanctuary family.</p>
+      </div>
+      <div class="birthday-gallery" id="birthdayGallery"></div>
+    </section>
+
+    <section class="band">
+      <div class="section">
+        <div class="section-head">
+          <h2>Submit for a flyer</h2>
+          <p>Upload a clear photo, your name, and birth month &amp; day. The sanctuary media team will download your photo, create the flyer, and upload it to this page.</p>
+        </div>
+        <form class="birthday-form" id="birthdayForm">
+          <div class="birthday-form-grid">
+            <label>
+              Full name
+              <input type="text" name="name" required placeholder="e.g. Ama Owusu" />
+            </label>
+            <label>
+              Birth month
+              <select name="month" id="birthdayMonth" required>
+                <option value="" disabled selected>Select month</option>
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </label>
+            <label>
+              Birth day
+              <select name="day" id="birthdayDay" required>
+                <option value="" disabled selected>Select day</option>
+              </select>
+            </label>
+            <label>
+              Phone or WhatsApp (optional)
+              <input type="text" name="contact" placeholder="For the sanctuary team only" />
+            </label>
+            <label>
+              Photo for the flyer
+              <input type="file" id="birthdayPhoto" name="photo" accept="image/*" required />
+            </label>
+          </div>
+          <img id="birthdayPhotoPreview" class="birthday-photo-preview" alt="Photo preview" hidden />
+          <button class="btn btn-primary" type="submit" style="background:#e8d7a0;color:var(--forest);">Send for flyer</button>
+          <p id="birthdayFormNote" class="form-note"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <strong>St. Mary's Sanctuary, Grotto-Buoho</strong>
+        Ashanti Region · Ghana
+      </div>
+      <div>
+        <a href="portal.html">Staff: open Sanctuary Portal</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/site.js"></script>
+  <script src="js/birthdays.js"></script>
+</body>
+</html>

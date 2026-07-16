@@ -2,11 +2,11 @@
   const STORAGE_KEY = "stfrancis-church-data-v1";
 
   const titles = {
-    dashboard: ["Dashboard", "Overview of parish activity"],
-    members: ["Members", "Membership records and household details"],
-    contributions: ["Contributions", "Tithes, offerings, and gifts"],
-    events: ["Events", "Parish calendar and gatherings"],
-    reports: ["Reports", "Giving and membership summaries"],
+    dashboard: ["Dashboard", "Overview of sanctuary activity"],
+    inbox: ["Inbox", "Messages from the website Contact page"],
+    birthdays: ["Birthdays", "Download photos, upload finished flyers, publish to the website"],
+    events: ["Events", "Sanctuary calendar and gatherings"],
+    schedule: ["Weekly schedule", "Mass times and weekly worship items on the website"],
   };
 
   const seed = () => {
@@ -18,63 +18,35 @@
     };
 
     return {
-      members: [
-        {
-          id: crypto.randomUUID(),
-            firstName: "Ama",
-          lastName: "Owusu",
-          email: "ama.owusu@example.com",
-          phone: "024 000 1122",
-          status: "Active",
-          joined: iso(-400),
-          notes: "Choir lead · Buoho",
-        },
-        {
-          id: crypto.randomUUID(),
-          firstName: "Kwame",
-          lastName: "Asante",
-          email: "kwame.asante@example.com",
-          phone: "020 000 3344",
-          status: "Active",
-          joined: iso(-220),
-          notes: "Usher team",
-        },
-        {
-          id: crypto.randomUUID(),
-          firstName: "Akosua",
-          lastName: "Boateng",
-          email: "akosua.b@example.com",
-          phone: "027 000 5566",
-          status: "Inactive",
-          joined: iso(-800),
-          notes: "",
-        },
-      ],
-      contributions: [],
+      messages: [],
+      birthdays: [],
+      schedule: window.ScheduleUtils
+        ? ScheduleUtils.defaultSchedule()
+        : [],
       events: [
         {
           id: crypto.randomUUID(),
-          title: "Sunday Eucharist",
+          title: "First Mass",
           date: iso(2),
-          time: "09:00",
-          location: "Main Church, Buoho",
-          description: "Weekly celebration of Holy Mass",
+          time: "07:30",
+          location: "St. Mary's Sanctuary, Grotto-Buoho",
+          description: "Sunday Mass · 7:30 – 9:30 AM",
+        },
+        {
+          id: crypto.randomUUID(),
+          title: "Second Mass",
+          date: iso(2),
+          time: "09:30",
+          location: "St. Mary's Sanctuary, Grotto-Buoho",
+          description: "Sunday Mass · 9:30 – 11:30 AM",
         },
         {
           id: crypto.randomUUID(),
           title: "Youth Fellowship",
           date: iso(5),
           time: "18:30",
-          location: "Parish Hall",
+          location: "Sanctuary Hall",
           description: "Prayer, games, and Catholic teaching",
-        },
-        {
-          id: crypto.randomUUID(),
-          title: "Parish Service Day",
-          date: iso(12),
-          time: "08:00",
-          location: "Church grounds",
-          description: "Clean-up and practical service together",
         },
       ],
     };
@@ -85,39 +57,18 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
         const data = seed();
-        data.contributions = [
-          {
-            id: crypto.randomUUID(),
-            memberId: data.members[0].id,
-            date: new Date().toISOString().slice(0, 10),
-            type: "Tithe",
-            method: "Bank transfer",
-            amount: 120,
-            notes: "",
-          },
-          {
-            id: crypto.randomUUID(),
-            memberId: data.members[1].id,
-            date: new Date(Date.now() - 86400000 * 3).toISOString().slice(0, 10),
-            type: "Offering",
-            method: "Cash",
-            amount: 45,
-            notes: "Thanksgiving",
-          },
-          {
-            id: crypto.randomUUID(),
-            memberId: data.members[0].id,
-            date: new Date(Date.now() - 86400000 * 20).toISOString().slice(0, 10),
-            type: "Special",
-            method: "Card",
-            amount: 200,
-            notes: "Building fund",
-          },
-        ];
         save(data);
         return data;
       }
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.messages)) parsed.messages = [];
+      if (!Array.isArray(parsed.birthdays)) parsed.birthdays = [];
+      if (!Array.isArray(parsed.schedule) || !parsed.schedule.length) {
+        parsed.schedule = window.ScheduleUtils
+          ? ScheduleUtils.defaultSchedule()
+          : [];
+      }
+      return parsed;
     } catch {
       return seed();
     }
@@ -128,8 +79,17 @@
   }
 
   let state = load();
+  if (!Array.isArray(state.messages)) state.messages = [];
+  if (!Array.isArray(state.birthdays)) state.birthdays = [];
+  if (!Array.isArray(state.schedule) || !state.schedule.length) {
+    state.schedule = window.ScheduleUtils
+      ? ScheduleUtils.defaultSchedule()
+      : [];
+  }
   let modalMode = null;
   let editingId = null;
+  let activeBirthdayId = null;
+  let uploadedFlyerUrl = null;
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => [...document.querySelectorAll(sel)];
@@ -139,25 +99,21 @@
   const modalTitle = $("#modalTitle");
   const modalBody = $("#modalBody");
 
-  function money(n) {
-    return new Intl.NumberFormat("en-GH", {
-      style: "currency",
-      currency: "GHS",
-      maximumFractionDigits: 0,
-    }).format(Number(n) || 0);
-  }
-
-  function memberName(id) {
-    const m = state.members.find((x) => x.id === id);
-    return m ? `${m.firstName} ${m.lastName}` : "Unknown";
-  }
-
   function formatDate(iso) {
     if (!iso) return "—";
     return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",
       year: "numeric",
+    });
+  }
+
+  function syncNewBirthdays() {
+    if (!window.BirthdayUtils) return;
+    const latest = BirthdayUtils.loadData().birthdays || [];
+    const known = new Set(state.birthdays.map((b) => b.id));
+    latest.forEach((b) => {
+      if (!known.has(b.id)) state.birthdays.push(b);
     });
   }
 
@@ -169,41 +125,39 @@
     $("#pageTitle").textContent = title;
     $("#pageNote").textContent = note;
     $("#sidebar").classList.remove("open");
+    if (name === "birthdays") syncNewBirthdays();
     renderAll();
   }
 
   function renderDashboard() {
-    const year = new Date().getFullYear();
-    const ytd = state.contributions
-      .filter((c) => String(c.date).startsWith(String(year)))
-      .reduce((sum, c) => sum + Number(c.amount), 0);
-
     const upcoming = state.events
       .filter((e) => e.date >= new Date().toISOString().slice(0, 10))
       .sort((a, b) => a.date.localeCompare(b.date));
 
-    $("#statMembers").textContent = state.members.filter((m) => m.status === "Active").length;
-    $("#statGiving").textContent = money(ytd);
-    $("#statEvents").textContent = upcoming.length;
-    $("#statFamilies").textContent = new Set(state.members.map((m) => m.lastName)).size;
+    const unread = state.messages.filter((m) => !m.read).length;
+    const pendingBirthdays = state.birthdays.filter((b) => b.status === "pending").length;
 
-    const recent = [...state.contributions]
-      .sort((a, b) => b.date.localeCompare(a.date))
+    $("#statMessages").textContent = unread;
+    $("#statEvents").textContent = upcoming.length;
+    $("#statBirthdays").textContent = pendingBirthdays;
+    $("#statSchedule").textContent = state.schedule.length;
+
+    const recentMessages = [...state.messages]
+      .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
       .slice(0, 5);
 
-    $("#dashContributions").innerHTML = recent.length
-      ? recent
+    $("#dashMessages").innerHTML = recentMessages.length
+      ? recentMessages
           .map(
-            (c) => `
+            (m) => `
         <tr>
-          <td>${formatDate(c.date)}</td>
-          <td>${memberName(c.memberId)}</td>
-          <td>${c.type}</td>
-          <td>${money(c.amount)}</td>
+          <td>${formatDateTime(m.createdAt)}</td>
+          <td>${escapeHtml(m.name)}</td>
+          <td>${escapeHtml(m.contact)}</td>
         </tr>`
           )
           .join("")
-      : `<tr><td colspan="4" class="empty">No contributions yet</td></tr>`;
+      : `<tr><td colspan="3" class="empty">No messages yet</td></tr>`;
 
     $("#dashEvents").innerHTML = upcoming.length
       ? upcoming
@@ -224,66 +178,6 @@
           })
           .join("")
       : `<li class="empty">No upcoming events</li>`;
-  }
-
-  function renderMembers() {
-    const q = ($("#memberSearch").value || "").toLowerCase().trim();
-    const rows = state.members
-      .filter((m) => {
-        const hay = `${m.firstName} ${m.lastName} ${m.email} ${m.phone}`.toLowerCase();
-        return !q || hay.includes(q);
-      })
-      .sort((a, b) => a.lastName.localeCompare(b.lastName));
-
-    $("#membersTable").innerHTML = rows.length
-      ? rows
-          .map(
-            (m) => `
-        <tr>
-          <td><strong>${m.firstName} ${m.lastName}</strong></td>
-          <td>${m.email || "—"}</td>
-          <td>${m.phone || "—"}</td>
-          <td><span class="badge ${m.status === "Active" ? "active" : "inactive"}">${m.status}</span></td>
-          <td>${formatDate(m.joined)}</td>
-          <td>
-            <div class="row-actions">
-              <button class="btn small" data-edit-member="${m.id}">Edit</button>
-              <button class="btn small danger" data-del-member="${m.id}">Delete</button>
-            </div>
-          </td>
-        </tr>`
-          )
-          .join("")
-      : `<tr><td colspan="6" class="empty">No members found</td></tr>`;
-  }
-
-  function renderContributions() {
-    const filter = $("#contributionFilter").value;
-    const rows = [...state.contributions]
-      .filter((c) => filter === "all" || c.type === filter)
-      .sort((a, b) => b.date.localeCompare(a.date));
-
-    $("#contributionsTable").innerHTML = rows.length
-      ? rows
-          .map(
-            (c) => `
-        <tr>
-          <td>${formatDate(c.date)}</td>
-          <td>${memberName(c.memberId)}</td>
-          <td>${c.type}</td>
-          <td>${c.method}</td>
-          <td>${money(c.amount)}</td>
-          <td>${c.notes || "—"}</td>
-          <td>
-            <div class="row-actions">
-              <button class="btn small" data-edit-contribution="${c.id}">Edit</button>
-              <button class="btn small danger" data-del-contribution="${c.id}">Delete</button>
-            </div>
-          </td>
-        </tr>`
-          )
-          .join("")
-      : `<tr><td colspan="7" class="empty">No contributions recorded</td></tr>`;
   }
 
   function renderEvents() {
@@ -307,71 +201,269 @@
       : `<p class="empty">No events scheduled</p>`;
   }
 
-  function renderReports() {
-    const byType = {};
-    state.contributions.forEach((c) => {
-      byType[c.type] = (byType[c.type] || 0) + Number(c.amount);
+  function formatDateTime(iso) {
+    if (!iso) return "—";
+    return new Date(iso).toLocaleString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
-    const maxType = Math.max(...Object.values(byType), 1);
+  }
 
-    $("#reportByType").innerHTML = Object.keys(byType).length
-      ? Object.entries(byType)
-          .sort((a, b) => b[1] - a[1])
+  function updateInboxBadge() {
+    const badge = $("#inboxBadge");
+    if (!badge) return;
+    const unread = state.messages.filter((m) => !m.read).length;
+    badge.textContent = String(unread);
+    badge.hidden = unread === 0;
+  }
+
+  function updateBirthdayBadge() {
+    const badge = $("#birthdayBadge");
+    if (!badge) return;
+    const pending = state.birthdays.filter((b) => b.status === "pending").length;
+    badge.textContent = String(pending);
+    badge.hidden = pending === 0;
+  }
+
+  function renderBirthdays() {
+    syncNewBirthdays();
+    updateBirthdayBadge();
+    const admin = $("#birthdayAdmin");
+    if (!admin) return;
+
+    const rows = [...state.birthdays].sort((a, b) =>
+      String(b.submittedAt || "").localeCompare(String(a.submittedAt || ""))
+    );
+
+    admin.innerHTML = rows.length
+      ? rows
           .map(
-            ([type, total]) => `
-          <div class="bar-row">
-            <span>${type}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${(total / maxType) * 100}%"></div></div>
-            <strong>${money(total)}</strong>
-          </div>`
+            (b) => `
+        <article class="birthday-admin-item">
+          <img class="birthday-admin-thumb" src="${b.flyerDataUrl || b.imageDataUrl || ""}" alt="" />
+          <div>
+            <h3>${escapeHtml(b.name)}</h3>
+            <p>${BirthdayUtils.formatBirthday(b.date)} · ${
+              b.status === "published" ? "Published on website" : "Awaiting flyer upload"
+            }</p>
+            <p>${escapeHtml(b.contact || "No phone number left")}</p>
+          </div>
+          <div class="row-actions">
+            <button class="btn small" data-download-photo="${b.id}">Download photo</button>
+            ${
+              b.flyerDataUrl
+                ? `<button class="btn small" data-download-flyer="${b.id}">Download flyer</button>`
+                : ""
+            }
+            <button class="btn small primary" data-upload-flyer="${b.id}">Upload flyer</button>
+            ${
+              b.status === "published"
+                ? `<button class="btn small" data-unpublish-birthday="${b.id}">Unpublish</button>`
+                : ""
+            }
+            <button class="btn small danger" data-del-birthday="${b.id}">Delete</button>
+          </div>
+        </article>`
           )
           .join("")
-      : `<p class="empty">No giving data yet</p>`;
+      : `<p class="empty">No birthday submissions yet. People can send their photo, name, and date from the Birthdays page.</p>`;
+  }
 
-    const active = state.members.filter((m) => m.status === "Active").length;
-    const inactive = state.members.length - active;
-    $("#reportMembership").innerHTML = `
-      <li><span>Total members</span><strong>${state.members.length}</strong></li>
-      <li><span>Active</span><strong>${active}</strong></li>
-      <li><span>Inactive</span><strong>${inactive}</strong></li>
-      <li><span>Total recorded giving</span><strong>${money(
-        state.contributions.reduce((s, c) => s + Number(c.amount), 0)
-      )}</strong></li>
-      <li><span>Scheduled events</span><strong>${state.events.length}</strong></li>
-    `;
+  function openFlyerUpload(id) {
+    const item = state.birthdays.find((b) => b.id === id);
+    if (!item) return;
+    activeBirthdayId = id;
+    uploadedFlyerUrl = item.flyerDataUrl || null;
 
-    const months = {};
-    state.contributions.forEach((c) => {
-      const key = c.date.slice(0, 7);
-      months[key] = (months[key] || 0) + Number(c.amount);
-    });
-    const entries = Object.entries(months).sort((a, b) => a[0].localeCompare(b[0])).slice(-6);
-    const maxMonth = Math.max(...entries.map(([, v]) => v), 1);
+    const panel = $("#flyerUploadPanel");
+    const nameEl = $("#flyerUploadName");
+    const preview = $("#flyerUploadPreview");
+    const input = $("#flyerUploadInput");
+    const publishBtn = $("#publishBirthdayBtn");
+    const unpublishBtn = $("#unpublishBirthdayBtn");
 
-    $("#reportMonthly").innerHTML = entries.length
-      ? entries
-          .map(([key, total]) => {
-            const label = new Date(key + "-01").toLocaleString("en-GB", {
-              month: "short",
-              year: "numeric",
-            });
-            return `
-            <div class="bar-row">
-              <span>${label}</span>
-              <div class="bar-track"><div class="bar-fill" style="width:${(total / maxMonth) * 100}%"></div></div>
-              <strong>${money(total)}</strong>
-            </div>`;
-          })
+    if (panel) panel.hidden = false;
+    if (nameEl) {
+      nameEl.textContent = `${item.name} · ${BirthdayUtils.formatBirthday(item.date)} — download the photo, design the flyer, then upload here.`;
+    }
+    if (input) input.value = "";
+    if (preview) {
+      if (uploadedFlyerUrl) {
+        preview.src = uploadedFlyerUrl;
+        preview.hidden = false;
+      } else {
+        preview.removeAttribute("src");
+        preview.hidden = true;
+      }
+    }
+    if (publishBtn) publishBtn.disabled = !uploadedFlyerUrl;
+    if (unpublishBtn) unpublishBtn.hidden = item.status !== "published";
+    panel?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function closeFlyerUpload() {
+    activeBirthdayId = null;
+    uploadedFlyerUrl = null;
+    const panel = $("#flyerUploadPanel");
+    const preview = $("#flyerUploadPreview");
+    const input = $("#flyerUploadInput");
+    if (panel) panel.hidden = true;
+    if (preview) {
+      preview.hidden = true;
+      preview.removeAttribute("src");
+    }
+    if (input) input.value = "";
+  }
+
+  function downloadBirthdayPhoto(id) {
+    const item = state.birthdays.find((b) => b.id === id);
+    if (!item?.imageDataUrl) {
+      alert("No photo available for this submission.");
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = item.imageDataUrl;
+    const safeName = (item.name || "photo").toLowerCase().replace(/\s+/g, "-");
+    const ext = item.imageDataUrl.startsWith("data:image/png") ? "png" : "jpg";
+    a.download = `${safeName}-birthday-photo.${ext}`;
+    a.click();
+  }
+
+  function downloadBirthdayFlyer(id) {
+    const item = state.birthdays.find((b) => b.id === id);
+    if (!item?.flyerDataUrl) {
+      alert("No uploaded flyer available yet.");
+      return;
+    }
+    const a = document.createElement("a");
+    a.href = item.flyerDataUrl;
+    const safeName = (item.name || "birthday").toLowerCase().replace(/\s+/g, "-");
+    const ext = item.flyerDataUrl.startsWith("data:image/png") ? "png" : "jpg";
+    a.download = `${safeName}-birthday-flyer.${ext}`;
+    a.click();
+  }
+
+  function publishActiveBirthday() {
+    if (!activeBirthdayId || !uploadedFlyerUrl) {
+      alert("Please upload the finished flyer image first.");
+      return;
+    }
+    state.birthdays = state.birthdays.map((b) =>
+      b.id === activeBirthdayId
+        ? {
+            ...b,
+            flyerDataUrl: uploadedFlyerUrl,
+            status: "published",
+            publishedAt: new Date().toISOString(),
+          }
+        : b
+    );
+    save(state);
+    renderAll();
+    const unpublishBtn = $("#unpublishBirthdayBtn");
+    if (unpublishBtn) unpublishBtn.hidden = false;
+    alert("Published! The flyer is now on the Birthdays page.");
+  }
+
+  function renderInbox() {
+    updateInboxBadge();
+    const list = $("#inboxList");
+    if (!list) return;
+
+    const rows = [...state.messages].sort((a, b) =>
+      String(b.createdAt).localeCompare(String(a.createdAt))
+    );
+
+    list.innerHTML = rows.length
+      ? rows
+          .map(
+            (m) => `
+        <article class="inbox-item ${m.read ? "read" : "unread"}" data-message-id="${m.id}">
+          <header class="inbox-item-head">
+            <div>
+              <h3>${escapeHtml(m.name)}</h3>
+              <p class="inbox-meta">${escapeHtml(m.contact)} · ${formatDateTime(m.createdAt)}</p>
+            </div>
+            <span class="badge ${m.read ? "inactive" : "active"}">${m.read ? "Read" : "New"}</span>
+          </header>
+          <p class="inbox-body">${escapeHtml(m.message)}</p>
+          <div class="row-actions">
+            ${
+              m.read
+                ? ""
+                : `<button class="btn small" data-read-message="${m.id}">Mark read</button>`
+            }
+            <button class="btn small danger" data-del-message="${m.id}">Delete</button>
+          </div>
+        </article>`
+          )
           .join("")
-      : `<p class="empty">No monthly totals yet</p>`;
+      : `<p class="empty">No messages yet. When visitors use the Contact page, their notes appear here.</p>`;
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function renderSchedule() {
+    const table = $("#scheduleTable");
+    if (!table) return;
+    const rows = [...state.schedule];
+    table.innerHTML = rows.length
+      ? rows
+          .map(
+            (item) => `
+        <tr>
+          <td><strong>${escapeHtml(item.title)}</strong></td>
+          <td>${escapeHtml(item.detail || "—")}</td>
+          <td>${escapeHtml(item.time || "—")}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn small" data-edit-schedule="${item.id}">Edit</button>
+              <button class="btn small danger" data-del-schedule="${item.id}">Delete</button>
+            </div>
+          </td>
+        </tr>`
+          )
+          .join("")
+      : `<tr><td colspan="4" class="empty">No schedule items yet. Add Mass times to show them on the website.</td></tr>`;
+  }
+
+  function scheduleForm(item = {}) {
+    return `
+      <div class="field">
+        <label for="title">Title</label>
+        <input id="title" name="title" required value="${escapeHtml(item.title || "")}" placeholder="e.g. First Mass" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="detail">Detail / day</label>
+          <input id="detail" name="detail" value="${escapeHtml(item.detail || "")}" placeholder="e.g. Sunday" />
+        </div>
+        <div class="field">
+          <label for="time">Time / place</label>
+          <input id="time" name="time" required value="${escapeHtml(item.time || "")}" placeholder="e.g. 7:30 – 9:30 AM" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="description">Description (Worship page)</label>
+        <textarea id="description" name="description">${escapeHtml(item.description || "")}</textarea>
+      </div>`;
   }
 
   function renderAll() {
     renderDashboard();
-    renderMembers();
-    renderContributions();
+    renderInbox();
+    renderBirthdays();
     renderEvents();
-    renderReports();
+    renderSchedule();
   }
 
   function openModal(title, fieldsHtml, mode, id = null) {
@@ -386,99 +478,6 @@
     if (modal.open) modal.close();
     modalMode = null;
     editingId = null;
-  }
-
-  function memberOptions(selected) {
-    return state.members
-      .map(
-        (m) =>
-          `<option value="${m.id}" ${m.id === selected ? "selected" : ""}>${m.firstName} ${m.lastName}</option>`
-      )
-      .join("");
-  }
-
-  function memberForm(m = {}) {
-    return `
-      <div class="field-row">
-        <div class="field">
-          <label for="firstName">First name</label>
-          <input id="firstName" name="firstName" required value="${m.firstName || ""}" />
-        </div>
-        <div class="field">
-          <label for="lastName">Last name</label>
-          <input id="lastName" name="lastName" required value="${m.lastName || ""}" />
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" value="${m.email || ""}" />
-        </div>
-        <div class="field">
-          <label for="phone">Phone</label>
-          <input id="phone" name="phone" value="${m.phone || ""}" />
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label for="status">Status</label>
-          <select id="status" name="status">
-            <option ${m.status === "Active" ? "selected" : ""}>Active</option>
-            <option ${m.status === "Inactive" ? "selected" : ""}>Inactive</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="joined">Joined</label>
-          <input id="joined" name="joined" type="date" required value="${m.joined || new Date().toISOString().slice(0, 10)}" />
-        </div>
-      </div>
-      <div class="field">
-        <label for="notes">Notes</label>
-        <textarea id="notes" name="notes">${m.notes || ""}</textarea>
-      </div>`;
-  }
-
-  function contributionForm(c = {}) {
-    return `
-      <div class="field">
-        <label for="memberId">Member</label>
-        <select id="memberId" name="memberId" required>
-          <option value="">Select member…</option>
-          ${memberOptions(c.memberId)}
-        </select>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label for="date">Date</label>
-          <input id="date" name="date" type="date" required value="${c.date || new Date().toISOString().slice(0, 10)}" />
-        </div>
-        <div class="field">
-          <label for="amount">Amount (GH₵)</label>
-          <input id="amount" name="amount" type="number" min="0" step="0.01" required value="${c.amount ?? ""}" />
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label for="type">Type</label>
-          <select id="type" name="type">
-            ${["Tithe", "Offering", "Special", "Pledge"]
-              .map((t) => `<option ${c.type === t ? "selected" : ""}>${t}</option>`)
-              .join("")}
-          </select>
-        </div>
-        <div class="field">
-          <label for="method">Method</label>
-          <select id="method" name="method">
-            ${["Cash", "Card", "Bank transfer", "Cheque"]
-              .map((t) => `<option ${c.method === t ? "selected" : ""}>${t}</option>`)
-              .join("")}
-          </select>
-        </div>
-      </div>
-      <div class="field">
-        <label for="notes">Notes</label>
-        <textarea id="notes" name="notes">${c.notes || ""}</textarea>
-      </div>`;
   }
 
   function eventForm(e = {}) {
@@ -519,43 +518,6 @@
     e.preventDefault();
     const v = formValues();
 
-    if (modalMode === "member") {
-      const record = {
-        id: editingId || crypto.randomUUID(),
-        firstName: v.firstName,
-        lastName: v.lastName,
-        email: v.email,
-        phone: v.phone,
-        status: v.status,
-        joined: v.joined,
-        notes: v.notes,
-      };
-      if (editingId) {
-        state.members = state.members.map((m) => (m.id === editingId ? record : m));
-      } else {
-        state.members.push(record);
-      }
-    }
-
-    if (modalMode === "contribution") {
-      const record = {
-        id: editingId || crypto.randomUUID(),
-        memberId: v.memberId,
-        date: v.date,
-        type: v.type,
-        method: v.method,
-        amount: Number(v.amount),
-        notes: v.notes,
-      };
-      if (editingId) {
-        state.contributions = state.contributions.map((c) =>
-          c.id === editingId ? record : c
-        );
-      } else {
-        state.contributions.push(record);
-      }
-    }
-
     if (modalMode === "event") {
       const record = {
         id: editingId || crypto.randomUUID(),
@@ -569,6 +531,23 @@
         state.events = state.events.map((ev) => (ev.id === editingId ? record : ev));
       } else {
         state.events.push(record);
+      }
+    }
+
+    if (modalMode === "schedule") {
+      const record = {
+        id: editingId || crypto.randomUUID(),
+        title: v.title,
+        detail: v.detail,
+        time: v.time,
+        description: v.description,
+      };
+      if (editingId) {
+        state.schedule = state.schedule.map((item) =>
+          item.id === editingId ? { ...item, ...record } : item
+        );
+      } else {
+        state.schedule.push(record);
       }
     }
 
@@ -588,53 +567,125 @@
     $("#sidebar").classList.toggle("open");
   });
 
-  $("#addMemberBtn").addEventListener("click", () =>
-    openModal("Add member", memberForm(), "member")
-  );
-  $("#addContributionBtn").addEventListener("click", () => {
-    if (!state.members.length) {
-      alert("Add a member before recording a contribution.");
-      return;
-    }
-    openModal("Record contribution", contributionForm(), "contribution");
-  });
   $("#addEventBtn").addEventListener("click", () =>
     openModal("Add event", eventForm(), "event")
   );
+  $("#addScheduleBtn")?.addEventListener("click", () =>
+    openModal("Add schedule item", scheduleForm(), "schedule")
+  );
 
-  $("#memberSearch").addEventListener("input", renderMembers);
-  $("#contributionFilter").addEventListener("change", renderContributions);
+  const markAllReadBtn = $("#markAllReadBtn");
+  if (markAllReadBtn) {
+    markAllReadBtn.addEventListener("click", () => {
+      state.messages = state.messages.map((m) => ({ ...m, read: true }));
+      save(state);
+      renderAll();
+    });
+  }
+
+  $("#flyerUploadInput")?.addEventListener("change", async () => {
+    const file = $("#flyerUploadInput")?.files?.[0];
+    const preview = $("#flyerUploadPreview");
+    const publishBtn = $("#publishBirthdayBtn");
+    if (!file) {
+      uploadedFlyerUrl = null;
+      if (preview) {
+        preview.hidden = true;
+        preview.removeAttribute("src");
+      }
+      if (publishBtn) publishBtn.disabled = true;
+      return;
+    }
+    try {
+      uploadedFlyerUrl = window.BirthdayUtils
+        ? await BirthdayUtils.resizeImage(file, 1400, 0.9)
+        : await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+      if (preview) {
+        preview.src = uploadedFlyerUrl;
+        preview.hidden = false;
+      }
+      if (publishBtn) publishBtn.disabled = false;
+    } catch (err) {
+      uploadedFlyerUrl = null;
+      alert(err.message || "Could not read the flyer image.");
+      if (publishBtn) publishBtn.disabled = true;
+    }
+  });
+
+  $("#publishBirthdayBtn")?.addEventListener("click", publishActiveBirthday);
+
+  $("#unpublishBirthdayBtn")?.addEventListener("click", () => {
+    if (!activeBirthdayId) return;
+    state.birthdays = state.birthdays.map((b) =>
+      b.id === activeBirthdayId
+        ? { ...b, status: "pending", publishedAt: null }
+        : b
+    );
+    save(state);
+    renderAll();
+    const unpublishBtn = $("#unpublishBirthdayBtn");
+    if (unpublishBtn) unpublishBtn.hidden = true;
+  });
+
+  $("#closeFlyerBtn")?.addEventListener("click", closeFlyerUpload);
 
   document.addEventListener("click", (e) => {
     const t = e.target;
     if (!(t instanceof HTMLElement)) return;
 
-    if (t.dataset.editMember) {
-      const m = state.members.find((x) => x.id === t.dataset.editMember);
-      if (m) openModal("Edit member", memberForm(m), "member", m.id);
+    if (t.dataset.downloadPhoto) {
+      downloadBirthdayPhoto(t.dataset.downloadPhoto);
     }
-    if (t.dataset.delMember) {
-      if (confirm("Delete this member?")) {
-        const id = t.dataset.delMember;
-        state.members = state.members.filter((m) => m.id !== id);
-        state.contributions = state.contributions.filter((c) => c.memberId !== id);
-        save(state);
-        renderAll();
+    if (t.dataset.downloadFlyer) {
+      downloadBirthdayFlyer(t.dataset.downloadFlyer);
+    }
+    if (t.dataset.uploadFlyer) {
+      openFlyerUpload(t.dataset.uploadFlyer);
+    }
+    if (t.dataset.unpublishBirthday) {
+      state.birthdays = state.birthdays.map((b) =>
+        b.id === t.dataset.unpublishBirthday
+          ? { ...b, status: "pending", publishedAt: null }
+          : b
+      );
+      save(state);
+      renderAll();
+      if (activeBirthdayId === t.dataset.unpublishBirthday) {
+        const unpublishBtn = $("#unpublishBirthdayBtn");
+        if (unpublishBtn) unpublishBtn.hidden = true;
       }
     }
-    if (t.dataset.editContribution) {
-      const c = state.contributions.find((x) => x.id === t.dataset.editContribution);
-      if (c) openModal("Edit contribution", contributionForm(c), "contribution", c.id);
-    }
-    if (t.dataset.delContribution) {
-      if (confirm("Delete this contribution?")) {
-        state.contributions = state.contributions.filter(
-          (c) => c.id !== t.dataset.delContribution
+    if (t.dataset.delBirthday) {
+      if (confirm("Delete this birthday submission?")) {
+        state.birthdays = state.birthdays.filter(
+          (b) => b.id !== t.dataset.delBirthday
         );
+        if (activeBirthdayId === t.dataset.delBirthday) closeFlyerUpload();
         save(state);
         renderAll();
       }
     }
+
+    if (t.dataset.readMessage) {
+      state.messages = state.messages.map((m) =>
+        m.id === t.dataset.readMessage ? { ...m, read: true } : m
+      );
+      save(state);
+      renderAll();
+    }
+    if (t.dataset.delMessage) {
+      if (confirm("Delete this message?")) {
+        state.messages = state.messages.filter((m) => m.id !== t.dataset.delMessage);
+        save(state);
+        renderAll();
+      }
+    }
+
     if (t.dataset.editEvent) {
       const ev = state.events.find((x) => x.id === t.dataset.editEvent);
       if (ev) openModal("Edit event", eventForm(ev), "event", ev.id);
@@ -646,30 +697,26 @@
         renderAll();
       }
     }
+    if (t.dataset.editSchedule) {
+      const item = state.schedule.find((x) => x.id === t.dataset.editSchedule);
+      if (item) openModal("Edit schedule item", scheduleForm(item), "schedule", item.id);
+    }
+    if (t.dataset.delSchedule) {
+      if (confirm("Delete this schedule item from the website?")) {
+        state.schedule = state.schedule.filter((s) => s.id !== t.dataset.delSchedule);
+        save(state);
+        renderAll();
+      }
+    }
   });
 
-  $("#exportBtn").addEventListener("click", () => {
-    const lines = [
-      ["Date", "Member", "Type", "Method", "Amount", "Notes"].join(","),
-      ...state.contributions.map((c) =>
-        [
-          c.date,
-          `"${memberName(c.memberId)}"`,
-          c.type,
-          c.method,
-          c.amount,
-          `"${(c.notes || "").replace(/"/g, '""')}"`,
-        ].join(",")
-      ),
-    ];
-    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "st-francis-contributions.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  });
+  function bootPortal() {
+    renderAll();
+  }
 
-  renderAll();
+  if (window.ParishAuth?.isAuthenticated()) {
+    bootPortal();
+  } else {
+    window.addEventListener("parish-portal-unlocked", bootPortal, { once: true });
+  }
 })();
